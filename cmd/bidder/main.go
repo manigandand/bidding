@@ -4,7 +4,12 @@ import (
 	v1 "bidding/api/v1"
 	"bidding/config"
 	appmiddleware "bidding/middleware"
+	"bidding/pkg/respond"
 	"bidding/pkg/trace"
+	"bidding/schema"
+	"bytes"
+	"encoding/json"
+	"errors"
 	"flag"
 	"log"
 	"time"
@@ -22,6 +27,8 @@ var (
 	Port int
 	// Delay after the bidder to respond to auction request
 	Delay time.Duration
+	// BidderID unique identifier of bidder
+	BidderID string
 )
 
 func main() {
@@ -67,9 +74,49 @@ func main() {
 	// Initialize the version 1 routes of the API
 	router.Route("/v1", v1.Init)
 
-	// TODO: register with auctioneer
+	// register with auctioneer
+	if err := registerWithAuctioneer(*name); err != nil {
+		log.Fatal("Can't able to register with auctioneer. Err: ", err.Error())
+	}
 
 	trace.Log.Infof("Starting bidder %s on port :%d with delay %d\n",
 		*name, *port, *delay)
 	http.ListenAndServe(fmt.Sprintf(":%d", *port), router)
+}
+
+func registerWithAuctioneer(name string) error {
+	url := config.AuctioneerHost + "/v1/bidder/register"
+	body := bytes.NewBuffer(nil)
+	json.NewEncoder(body).Encode(map[string]interface{}{
+		"name":  name,
+		"delay": Delay,
+	})
+
+	req, err := http.NewRequest(http.MethodPost, url, body)
+	if err != nil {
+		return err
+	}
+	req.Host = fmt.Sprintf("localhost:%d", Port)
+	req.Header.Set("Content-Type", "application/json")
+
+	resp, err := http.DefaultClient.Do(req)
+	if err != nil {
+		return err
+	}
+	defer resp.Body.Close()
+
+	var res struct {
+		Data *schema.Bidder `json:"data"`
+		Meta respond.Meta   `json:"meta"`
+	}
+	if err := json.NewDecoder(resp.Body).Decode(&res); err != nil {
+		return err
+	}
+	if resp.StatusCode > 201 {
+		return errors.New(res.Meta.Message)
+	}
+
+	BidderID = res.Data.ID
+	fmt.Println("Bidder ID: ", BidderID)
+	return nil
 }

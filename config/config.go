@@ -16,8 +16,9 @@ const (
 
 // Env holds the current environment
 var (
-	Env  string
-	Port string
+	Env            string
+	Port           string
+	AuctioneerHost string
 )
 
 func init() {
@@ -29,6 +30,7 @@ func GetAllEnv() {
 	// API Configs
 	mustEnv("ENV", &Env, EnvDev)
 	mustEnv("PORT", &Port, "8080")
+	mustEnv("AUCTIONEER_HOST", &AuctioneerHost, "http://localhost:"+Port)
 }
 
 // mustEnv get the env variable with the name 'key' and store it in 'value'
