@@ -3,7 +3,9 @@ package main
 import (
 	v1 "bidding/api/v1"
 	"bidding/config"
+	appmiddleware "bidding/middleware"
 	"bidding/pkg/trace"
+
 	"fmt"
 	"net/http"
 
@@ -19,7 +21,9 @@ var (
 )
 
 func main() {
+	api.InitService(name, version)
 	trace.Setup(config.Env)
+
 	router := chi.NewRouter()
 	cors := cors.New(cors.Options{
 		AllowedOrigins: []string{"*"},
@@ -40,6 +44,7 @@ func main() {
 	router.Use(cors.Handler)
 	router.Use(
 		middleware.Logger,
+		appmiddleware.Recoverer,
 	)
 
 	// Initialize the version 1 routes of the API
