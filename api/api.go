@@ -6,10 +6,14 @@ import (
 
 	"bidding/pkg/errors"
 	"bidding/pkg/respond"
+	"bidding/pkg/store"
 	"bidding/pkg/trace"
 
 	"github.com/gorilla/context"
 )
+
+// Store holds new conn
+var Store *store.Conn
 
 // ServiceInfo stores basic service information
 type ServiceInfo struct {
@@ -32,6 +36,9 @@ func InitService(name, version string) {
 		Uptime:  time.Now(),
 		Epoch:   time.Now().Unix(),
 	}
+
+	Store = store.NewStore()
+	// bidder.ShareConn()
 }
 
 // API Handler's ---------------------------------------------------------------
@@ -45,7 +52,7 @@ func (f Handler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	defer context.Clear(r)
 	if err != nil {
 		// APP Level Error
-		trace.Log.Errorf("ServiceName: %s, StatusCode: %d, Error: %s\n DEBUG: %s\n",
+		trace.Log.Infof("ServiceName: %s, StatusCode: %d, Error: %s\n DEBUG: %+v\n",
 			ServiceName, err.Status, err.Error(), err.Debug)
 		respond.Fail(w, err)
 	}

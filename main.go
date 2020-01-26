@@ -1,6 +1,7 @@
 package main
 
 import (
+	"bidding/api"
 	v1 "bidding/api/v1"
 	"bidding/config"
 	appmiddleware "bidding/middleware"
@@ -12,7 +13,6 @@ import (
 	"github.com/go-chi/chi"
 	"github.com/go-chi/chi/middleware"
 	"github.com/rs/cors"
-	"github.com/squadcastHQ/auxpkg/api"
 )
 
 var (
