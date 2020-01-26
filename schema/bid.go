@@ -1,7 +1,7 @@
 package schema
 
-// Bid holds basic details about the bid
-type Bid struct {
-	AuctionID string  `json:"auction_id"`
-	Amount    float64 `json:"amount"`
+// BidResponse holds basic details about the bid
+type BidResponse struct {
+	BidderID string  `json:"bidder_id"`
+	Amount   float64 `json:"amount"`
 }

@@ -1,17 +1,19 @@
 package main
 
 import (
-	v1 "bidding/api/v1"
+	"bidding/api"
 	"bidding/config"
 	appmiddleware "bidding/middleware"
+	"bidding/pkg/errors"
 	"bidding/pkg/respond"
 	"bidding/pkg/trace"
 	"bidding/schema"
 	"bytes"
 	"encoding/json"
-	"errors"
+	er "errors"
 	"flag"
 	"log"
+	"math/rand"
 	"time"
 
 	"fmt"
@@ -71,8 +73,7 @@ func main() {
 		appmiddleware.Recoverer,
 	)
 
-	// Initialize the version 1 routes of the API
-	router.Route("/v1", v1.Init)
+	router.Method(http.MethodPost, "/v1/bid", api.Handler(bidHandler))
 
 	// register with auctioneer
 	if err := registerWithAuctioneer(*name); err != nil {
@@ -82,6 +83,20 @@ func main() {
 	trace.Log.Infof("Starting bidder %s on port :%d with delay %d\n",
 		*name, *port, *delay)
 	http.ListenAndServe(fmt.Sprintf(":%d", *port), router)
+}
+
+// NOTE: not doing anything with the request/auction_id
+func bidHandler(w http.ResponseWriter, r *http.Request) *errors.AppError {
+	<-time.After(Delay)
+	rand.Seed(time.Now().UnixNano())
+	min := 100
+	max := 3000
+
+	respond.OK(w, map[string]interface{}{
+		"bidder_id": BidderID,
+		"amount":    rand.Intn(max-min+1) + min,
+	})
+	return nil
 }
 
 func registerWithAuctioneer(name string) error {
@@ -113,7 +128,7 @@ func registerWithAuctioneer(name string) error {
 		return err
 	}
 	if resp.StatusCode > 201 {
-		return errors.New(res.Meta.Message)
+		return er.New(res.Meta.Message)
 	}
 
 	BidderID = res.Data.ID
