@@ -58,6 +58,14 @@ func OK(w http.ResponseWriter, data interface{}) {
 	With(w, http.StatusOK, res)
 }
 
+// Created send the 200 http response
+func Created(w http.ResponseWriter, data interface{}) {
+	var res Response
+	res.Data = data
+	res.Meta = Meta{Status: http.StatusCreated}
+	With(w, http.StatusCreated, res)
+}
+
 // Fail write the error response
 func Fail(w http.ResponseWriter, e *errors.AppError) {
 	var res Response
