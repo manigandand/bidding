@@ -31,8 +31,11 @@ tests:
 
 build-server:
 	@echo "==> Building server ...";
-	@$(GO_BUILD) -o $(SERVER_BIN) -ldflags "-w -s" $(SERVER_DIR)/$(SERVER_MAIN) || exit 1;
+	@GOOS=linux $(GO_BUILD) -o $(SERVER_BIN) -ldflags "-w -s" $(SERVER_DIR)/$(SERVER_MAIN) || exit 1;
 	@chmod 755 $(SERVER_BIN)
+
+	@GOOS=linux $(GO_BUILD) -o ./cmd/bidder/bidder -ldflags "-w -s" ./cmd/bidder || exit 1;
+	@chmod 755 cmd/bidder/bidder
 
 run:
 	./$(SERVER_BIN)

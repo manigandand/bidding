@@ -6,7 +6,14 @@ Create an auction system which can auction bids and select the winning bid such 
 
 Demo link: https://www.loom.com/share/b8213e38c14841bbbe7f7ebf74a2ab81
 
+Postman Collection: https://www.getpostman.com/collections/9a77db9a47732a9f454e
+
 ![ass](./model.png)
+
+```
+make build-server
+docker-compose up --build
+```
 
 There would be following actors in the system
 

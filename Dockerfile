@@ -10,5 +10,10 @@ WORKDIR /app
 # This require the project to be built first before copying,
 # else docker build will fail
 COPY bidding /app/
-EXPOSE 80
+
+ENV ENV=dev
+ENV PORT=8080
+ENV AUCTIONEER_HOST=http://localhost:8080
+
+EXPOSE 8080
 CMD /app/bidding

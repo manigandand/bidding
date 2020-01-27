@@ -1,0 +1,58 @@
+# Docker Compose file Reference (https://docs.docker.com/compose/compose-file/)
+
+version: "3"
+
+# Define services
+services:
+  auctioneer:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "8080:8080"
+    restart: unless-stopped
+    environment:
+      - ENV=dev
+      - PORT=8080
+      - AUCTIONEER_HOST=http://localhost:8080
+    networks:
+      - auctioneer_network
+
+  bidder_1:
+    build:
+      context: ./cmd/bidder
+      dockerfile: Dockerfile
+    command: ./bidder -port=8000 -name=bidderOne -delay=5
+    ports:
+      - "8000:8000"
+    restart: unless-stopped
+    depends_on:
+      - auctioneer
+    environment:
+      - ENV=dev
+      - AUCTIONEER_HOST=http://localhost:8080
+    networks:
+      - auctioneer_network
+
+  bidder_2:
+    build:
+      context: ./cmd/bidder
+      dockerfile: Dockerfile
+    command: ./bidder -port=8001 -name=bidderTwo -delay=10
+    ports:
+      - "8001:8001"
+    restart: unless-stopped
+    depends_on:
+      - auctioneer
+    environment:
+      - ENV=dev
+      - AUCTIONEER_HOST=http://localhost:8080
+    networks:
+      - auctioneer_network
+
+networks:
+  default:
+    external:
+      name: auctioneer_network
+  auctioneer_network:
+    # external: true
