@@ -111,7 +111,7 @@ func registerWithAuctioneer(name string) error {
 	if err != nil {
 		return err
 	}
-	req.Host = fmt.Sprintf("localhost:%d", Port)
+	req.Host = fmt.Sprintf("%s:%d", config.BidderHost, Port)
 	req.Header.Set("Content-Type", "application/json")
 
 	resp, err := http.DefaultClient.Do(req)

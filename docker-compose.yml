@@ -15,6 +15,9 @@ services:
       - ENV=dev
       - PORT=8080
       - AUCTIONEER_HOST=http://localhost:8080
+    # links:
+    # - "bidder_1"
+    # - "bidder_2"
     networks:
       - auctioneer_network
 
@@ -30,7 +33,10 @@ services:
       - auctioneer
     environment:
       - ENV=dev
-      - AUCTIONEER_HOST=http://localhost:8080
+      - AUCTIONEER_HOST=http://auctioneer:8080
+      - BIDDER_HOST=bidder_1
+    links:
+      - "auctioneer"
     networks:
       - auctioneer_network
 
@@ -46,13 +52,12 @@ services:
       - auctioneer
     environment:
       - ENV=dev
-      - AUCTIONEER_HOST=http://localhost:8080
+      - AUCTIONEER_HOST=http://auctioneer:8080
+      - BIDDER_HOST=bidder_2
+    links:
+      - "auctioneer"
     networks:
       - auctioneer_network
 
 networks:
-  default:
-    external:
-      name: auctioneer_network
   auctioneer_network:
-    # external: true

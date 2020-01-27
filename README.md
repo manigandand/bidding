@@ -13,6 +13,8 @@ Postman Collection: https://www.getpostman.com/collections/9a77db9a47732a9f454e
 ```
 make build-server
 docker-compose up --build
+
+docker-compose down --remove-orphans
 ```
 
 There would be following actors in the system

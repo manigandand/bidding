@@ -19,6 +19,7 @@ var (
 	Env            string
 	Port           string
 	AuctioneerHost string
+	BidderHost     string
 )
 
 func init() {
@@ -31,6 +32,7 @@ func GetAllEnv() {
 	mustEnv("ENV", &Env, EnvDev)
 	mustEnv("PORT", &Port, "8080")
 	mustEnv("AUCTIONEER_HOST", &AuctioneerHost, "http://localhost:"+Port)
+	mustEnv("BIDDER_HOST", &BidderHost, "localhost")
 }
 
 // mustEnv get the env variable with the name 'key' and store it in 'value'
